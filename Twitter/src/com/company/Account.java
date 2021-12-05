@@ -26,7 +26,7 @@ public class Account {
     /**
      * fields that does not need to get value in constructor and for internal use
      */
-    private LinkedHashSet<String> usernameList;
+    public static LinkedHashSet<String> usernameList;
 
     /**
      * constructor of Account class
@@ -50,6 +50,17 @@ public class Account {
         this.username = username;
         usernameList.add(username);
         this.password = password;
+    }
+    public Account(String firstName, String lastName, LocalDate birthDate, LocalDate registrationDate, String username, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.bio = null;
+        this.birthDate = birthDate;
+        this.registrationDate = registrationDate;
+        this.username = username;
+        usernameList.add(username);
+        this.password = password;
+        encryptingPassword();
     }
 
     /**
@@ -115,11 +126,10 @@ public class Account {
         }
         return true;
     }
-    public void encryptingPassword(String pass) {
+    public void encryptingPassword() {
         try
         {
-            pass = this.password;
-            this.password = toHexString(getSHA(pass));
+            this.password = toHexString(getSHA(this.password));
         }
         // For specifying wrong message digest algorithms
         catch (NoSuchAlgorithmException e) {
