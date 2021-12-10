@@ -2,6 +2,7 @@ package Base;
 
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
 import static Base.EncryptAlgorithm.getSHA;
@@ -22,6 +23,7 @@ public class Account {
     private LocalDate registrationDate;
     private String username;
     private String password;
+    private int following;
 
     /**
      * fields that does not need to get value in constructor and for internal use
@@ -50,6 +52,7 @@ public class Account {
         this.username = username;
         usernameList.add(username);
         this.password = password;
+        this.following = 0;
     }
     public Account(String firstName, String lastName, LocalDate birthDate, LocalDate registrationDate, String username, String password) {
         this.firstName = firstName;
@@ -87,6 +90,10 @@ public class Account {
     public String getPassword() {
         return password;
     }
+    public int getFollowing() {
+        return following;
+    }
+
     /**
      * setter methods fot all fields except username , registration date ( once these fields are assigned , no one will be able to change them )
      */
@@ -104,6 +111,9 @@ public class Account {
     }
     public void setPassword(String password) {
         this.password = password;
+    }
+    public void setFollowing(int following) {
+        this.following = following;
     }
 
     //check methods start from here : ->

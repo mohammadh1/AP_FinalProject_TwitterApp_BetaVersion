@@ -1,8 +1,6 @@
 package Base;
 
 
-import Base.Account;
-
 import java.time.LocalDateTime;
 
 public class Tweet {
@@ -11,8 +9,8 @@ public class Tweet {
     private LocalDateTime date;
     private int likes;
     private int retweets;
-    public static int count = 0;
-    protected String id;
+    public static int countTweet = 0;
+    protected String idTweet;
 
     public Tweet(Account sender, String text, LocalDateTime date, int likes, int retweets) {
         this.sender = sender;
@@ -20,7 +18,7 @@ public class Tweet {
         this.date = date;
         this.likes = likes;
         this.retweets = retweets;
-        this.id = count++ + "";
+        this.idTweet = countTweet++ + "";
     }
 
     /**
@@ -41,15 +39,15 @@ public class Tweet {
     public int getRetweets() {
         return retweets;
     }
-    public String getId() {
-        return id;
+    public String getIdTweet() {
+        return idTweet;
     }
 
     /**
      * setter methods of Tweet class for text , likes and retweets number
      */
-    protected void setId(String id) {
-        this.id = id;
+    protected void setIdTweet(String idTweet) {
+        this.idTweet = idTweet;
     }
     public void setText(String text) {
         this.text = text;

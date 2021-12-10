@@ -42,7 +42,7 @@ public class AuthenticationService {
     public void signup(String username, String password, String firstName, String lastName, LocalDate birthDate) {
         for (String str : usernameList) {
             if (str.equals(username)) {
-                System.err.println("The username already exists");
+                System.err.println("The username already exists, try again");
             }
             else {
                 LocalDate registrationDate = LocalDate.now();
