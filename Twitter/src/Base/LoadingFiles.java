@@ -17,8 +17,8 @@ public abstract class LoadingFiles {
         accounts = new LinkedHashSet<>();
         individualTweets = new LinkedHashMap<>();
     }
-
     /**
+     * accounts information
      * load username and password of each account from hard drive and store it in an arraylist to use
      * by listFiles() method , we can get all files that stored in the specific directory
      */
@@ -44,8 +44,8 @@ public abstract class LoadingFiles {
             System.err.println("Directory is not existed");
         }
     }
-
     /**
+     *
      * loading tweets from hard drive and store them in a linkedHashmap that the keys are usernames and the values
      * are tweets that every individual texted on platform
      * tip : in line 57 , we must allocate space for arraylist which holds the tweets of every username
@@ -74,7 +74,6 @@ public abstract class LoadingFiles {
             System.err.println("Directory is not existed");
         }
     }
-
     /**
      * load following list of each account and put it into a hashmap that the keys are account owner and the values are
      * the accounts that owner is following them
@@ -87,7 +86,7 @@ public abstract class LoadingFiles {
             for (File file : directoryListing) {
                 try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
                     String line;
-                    // put name of file in key because name of file is the account that followingList is belong to it
+                    // put name of file in key because name of file is the account that followingList is belong to it ( doer account )
                     followingList.put(file.getName(), new ArrayList<>());
                     while ((line = bufferedReader.readLine()) != null) {
                         //adding username strings , these strings are username that the account ( who its name is on file ) is following
@@ -107,9 +106,6 @@ public abstract class LoadingFiles {
     /**
      * to update all lists of following of every account
      */
-    public static void updateFollowingList() {
-        // under construction
-    }
     public static void updateFollowingList(Account doerAccount) {
         for (String username : followingList.get(doerAccount.getUsername())) {
             // write new following list of doer account on file ( note that file name is doer's username

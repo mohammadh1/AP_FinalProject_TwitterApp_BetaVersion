@@ -24,6 +24,7 @@ public class Account {
     private String username;
     private String password;
     private int following;
+    private ArrayList<String> followingList;
 
     /**
      * fields that does not need to get value in constructor and for internal use
@@ -92,6 +93,9 @@ public class Account {
     }
     public int getFollowing() {
         return following;
+    }
+    public ArrayList<String> getFollowingList() {
+        return followingList;
     }
 
     /**
