@@ -3,8 +3,7 @@ package Base;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
-
+import static Base.LoadingFiles.usernameList;
 import static Base.EncryptAlgorithm.getSHA;
 import static Base.EncryptAlgorithm.toHexString;
 
@@ -24,12 +23,6 @@ public class Account {
     private String username;
     private String password;
     private int following;
-    private ArrayList<String> followingList;
-
-    /**
-     * fields that does not need to get value in constructor and for internal use
-     */
-    public static LinkedHashSet<String> usernameList;
 
     /**
      * constructor of Account class
@@ -53,6 +46,7 @@ public class Account {
         this.username = username;
         usernameList.add(username);
         this.password = password;
+        encryptingPassword();
         this.following = 0;
     }
     public Account(String firstName, String lastName, LocalDate birthDate, LocalDate registrationDate, String username, String password) {
@@ -65,6 +59,7 @@ public class Account {
         usernameList.add(username);
         this.password = password;
         encryptingPassword();
+        this.following = 0;
     }
 
     /**
@@ -93,9 +88,6 @@ public class Account {
     }
     public int getFollowing() {
         return following;
-    }
-    public ArrayList<String> getFollowingList() {
-        return followingList;
     }
 
     /**
