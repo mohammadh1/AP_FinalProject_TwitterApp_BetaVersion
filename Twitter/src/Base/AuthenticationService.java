@@ -12,7 +12,7 @@ import static Base.EncryptAlgorithm.toHexString;
 import static Base.LoadingFiles.accounts;
 
 public class AuthenticationService {
-    public boolean login(String username, String password) {
+    public static boolean login(String username, String password) {
         boolean flag = false;
         Iterator<Account> it = accounts.iterator();
         while (it.hasNext()) {
@@ -39,7 +39,7 @@ public class AuthenticationService {
             return false;
         }
     }
-    public void signup(String username, String password, String firstName, String lastName, LocalDate birthDate) {
+    public static void signup(String username, String password, String firstName, String lastName, LocalDate birthDate) {
         for (String str : usernameList) {
             if (str.equals(username)) {
                 System.err.println("The username already exists, try again");

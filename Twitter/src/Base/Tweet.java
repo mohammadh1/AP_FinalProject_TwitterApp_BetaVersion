@@ -20,6 +20,14 @@ public class Tweet {
         this.retweets = retweets;
         this.idTweet = countTweet++ + "";
     }
+    public Tweet(Account sender, String text, LocalDateTime date) {
+        this.sender = sender;
+        this.text = text;
+        this.date = date;
+        this.likes = 0;
+        this.retweets = 0;
+        this.idTweet = countTweet++ + "";
+    }
 
     /**
      * getter methods of Tweet class for all methods

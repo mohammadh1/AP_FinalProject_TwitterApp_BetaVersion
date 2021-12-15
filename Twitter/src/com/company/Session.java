@@ -1,9 +1,16 @@
 package com.company;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import Base.Account;
+import Base.Tweet;
+
+import java.io.*;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+
+import static Base.AuthenticationService.signup;
+import static Base.TimelineService.showAllTweets;
+import static Base.TweetingService.tweeting;
 
 public class Session implements Runnable{
     private Socket socket;
@@ -19,22 +26,31 @@ public class Session implements Runnable{
     public void run()
     {
         try {
-            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-            String line = "";
+            InputStream inputStream = socket.getInputStream();
+            OutputStream outputStream = socket.getOutputStream();
+            ObjectInputStream in = new ObjectInputStream(inputStream);
+            ObjectOutputStream out = new ObjectOutputStream(outputStream);
+            Object object = null;
             StringBuilder total = new StringBuilder();
-            while (!line.equals("over"))
-            {
-                line = dataInputStream.readUTF();
-                total = total.append(line);
-                total = total.append("  ");
-                dataOutputStream.writeUTF(total.toString());
+            while (!object.equals("exit=1")) {
+                object = in.readUTF();
+                    if (object instanceof Account) {
+                        Account account = (Account) object;
+                        signup(account.getUsername(), account.getPassword(), account.getFirstName(), account.getLastName(), account.getBirthDate());
+                    }
+                    else if (object instanceof Tweet) {
+                        tweeting((Tweet) object);
+                    }
+                    else if (object.equals("showAllTweet")) {
+                        Account account1 = (Account) in.readObject();
+                        out.writeObject(showAllTweets(account1));
+                    }
             }
-            dataInputStream.close();
-            dataOutputStream.close();
             socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        } catch (ClassNotFoundException classNotFoundException) {
+            classNotFoundException.printStackTrace();
         }
     }
 }

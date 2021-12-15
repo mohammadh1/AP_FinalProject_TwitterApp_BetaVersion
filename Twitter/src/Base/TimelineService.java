@@ -17,7 +17,7 @@ public class TimelineService {
      * @param account user A that we want to see all tweets which he tweeted
      * @return an array list of tweets that user A tweeted
      */
-    public ArrayList<Tweet> showTweetsOf(Account account) {
+    public static ArrayList<Tweet> showTweetsOf(Account account) {
         if (individualTweets.get(account).isEmpty()) {
             System.err.println("The account has not tweeted yet");
             return null;
@@ -31,7 +31,7 @@ public class TimelineService {
      * @param account requester account that wants to see all tweets of accounts that he followed
      * @return an array list of tweets that all followed user tweeted
      */
-    public ArrayList<Tweet> showAllTweets(Account account) {
+    public static ArrayList<Tweet> showAllTweets(Account account) {
         ArrayList<Tweet> tweets = new ArrayList<>();
         for (String username : followingList.get(account.getUsername())) {
             for (Tweet tweet : individualTweets.get(username)) {
@@ -40,5 +40,13 @@ public class TimelineService {
         }
         tweets.sort(Comparator.comparing(Tweet::getDate));
         return tweets;
+    }
+
+    public static int showLikes(Tweet tweet) {
+        return tweet.getLikes();
+    }
+
+    public static int showRetweets(Tweet tweet) {
+        return tweet.getRetweets();
     }
 }

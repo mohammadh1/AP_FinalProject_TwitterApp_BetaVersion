@@ -24,7 +24,7 @@ public class TweetingService {
             e.printStackTrace();
         }
     }*/ // first implementation
-    public void tweeting(Tweet tweet) {
+    public static void tweeting(Tweet tweet) {
         if (!individualTweets.containsKey(tweet.getSender().getUsername())) {
             individualTweets.put(tweet.getSender().getUsername(), new ArrayList<>());
             individualTweets.get(tweet.getSender().getUsername()).add(tweet);
@@ -55,7 +55,7 @@ public class TweetingService {
         else
             return false;
     }*/ // first implementation
-    public void deleting(Tweet deletedTweet) {
+    public static void deleting(Tweet deletedTweet) {
         if (!individualTweets.containsKey(deletedTweet.getSender().getUsername())) {
             if (individualTweets.get(deletedTweet.getSender().getUsername()).contains(deletedTweet)) {
                 individualTweets.get(deletedTweet.getSender().getUsername()).remove(deletedTweet);
@@ -69,7 +69,7 @@ public class TweetingService {
         }
     }
     // assign tweet to another account
-    public void retweeting(Tweet retweetedTweet, Account retweeter) {
+    public static void retweeting(Tweet retweetedTweet, Account retweeter) {
         Retweet retweet = new Retweet("Retweeted from " + retweetedTweet.getSender(),
                 retweetedTweet.getSender(),
                 retweetedTweet.getText(),
@@ -83,7 +83,7 @@ public class TweetingService {
     }
 
     // add up like number for the tweet
-    public void liking(Tweet likedTweet) {
+    public static void liking(Tweet likedTweet) {
         likedTweet.setLikes(likedTweet.getLikes()+1);
     }
 }
