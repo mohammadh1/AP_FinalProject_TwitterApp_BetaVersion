@@ -31,7 +31,7 @@ public class TimelineService {
      * @param account requester account that wants to see all tweets of accounts that he followed
      * @return an array list of tweets that all followed user tweeted
      */
-    public static ArrayList<Tweet> showAllTweets(Account account) {
+    public static ArrayList<Tweet> showAllTweets(Account account) {    // for another account
         ArrayList<Tweet> tweets = new ArrayList<>();
         for (String username : followingList.get(account.getUsername())) {
             for (Tweet tweet : individualTweets.get(username)) {
@@ -40,6 +40,15 @@ public class TimelineService {
         }
         tweets.sort(Comparator.comparing(Tweet::getDate));
         return tweets;
+    }
+
+    public static ArrayList<Tweet> showMyTweets(Account account) {    // for my account
+        ArrayList<Tweet> myTweets = new ArrayList<>();
+        for (Tweet tweet : individualTweets.get(account.getUsername())) {
+            myTweets.add(tweet);
+        }
+        myTweets.sort(Comparator.comparing(Tweet::getDate));
+        return myTweets;
     }
 
     public static int showLikes(Tweet tweet) {

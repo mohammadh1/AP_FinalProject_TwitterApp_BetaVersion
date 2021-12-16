@@ -1,5 +1,6 @@
 package Base;
 
+import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import static Base.EncryptAlgorithm.toHexString;
 /**
  *
  */
-public class Account {
+public class Account implements Serializable {
 
     /**
      * fields that must get values in constructor

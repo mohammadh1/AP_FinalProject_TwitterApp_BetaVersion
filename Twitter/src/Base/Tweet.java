@@ -1,9 +1,10 @@
 package Base;
 
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Tweet {
+public class Tweet implements Serializable {
     private Account sender;
     private String text;
     private LocalDateTime date;
@@ -72,5 +73,15 @@ public class Tweet {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Tweet : " +
+                "text='" + text + '\'' +
+                ", date=" + date +
+                ", likes=" + likes +
+                ", retweets=" + retweets +
+                '}';
     }
 }
