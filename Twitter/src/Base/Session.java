@@ -29,29 +29,12 @@ public class Session implements Runnable{
         try {
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-            Object object = "";
-            Account account = null;
-            while (!object.equals("exit=1")) {
-                object = in.readObject();
-                    if (object instanceof Account) {
-                        account = (Account) object;
-                        signup(account.getUsername(), account.getPassword(), account.getFirstName(), account.getLastName(), account.getBirthDate());
-                        System.out.println("account done");
-                    }
-                    else if (object instanceof Tweet) {
-                        tweeting((Tweet) object);
-                        System.out.println("tweet done");
-                    }
-                    else if (object.equals("showTweet")) {
-                        out.writeObject(showMyTweets(account));
-                        System.out.println("showing tweets done");
-                    }
+            while () {
+
             }
             socket.close();
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        } catch (ClassNotFoundException classNotFoundException) {
-            classNotFoundException.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
