@@ -57,4 +57,22 @@ public class AuthenticationService {
         else
             return false;
     }
+    public static Boolean signup(String username, String password, char[] bio, String firstName, String lastName, LocalDate birthDate) {
+        boolean flag = false;
+        for (String str : usernameList) {
+            if (str.equals(username)) {
+                System.err.println("The username already exists, try again");
+            }
+            else {
+                LocalDate registrationDate = LocalDate.now();
+                Account newAccount = new Account(firstName, lastName, bio, birthDate, registrationDate, username, password);
+                accounts.add(newAccount);
+                flag = true;
+            }
+        }
+        if (flag)
+            return true;
+        else
+            return false;
+    }
 }

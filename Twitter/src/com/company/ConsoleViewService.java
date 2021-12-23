@@ -14,7 +14,8 @@ import java.util.Iterator;
 public abstract class ConsoleViewService {
     public static void terminalStart(File file) {
         JSONParser jsonParser = new JSONParser();
-        if (file.exists()) {
+        if (file.length() != 0) {
+            JSONArray result = null;
             try {
                 Object obj = jsonParser.parse(new FileReader(file));
                 JSONObject jsonObj = (JSONObject) obj;
@@ -23,7 +24,7 @@ public abstract class ConsoleViewService {
                     int errorCode = (int) jsonObj.get("errorCode");
                     System.err.println("program execution faced an error ( ERROR CODE : " + errorCode);
                 } else {
-                    JSONArray result = (JSONArray) jsonObj.get("Results");
+                    result = (JSONArray) jsonObj.get("Results");
                     int count = (int) jsonObj.get("count");
                     int countInternal = result.size();
                     if (count == countInternal || count > 1) {
@@ -42,9 +43,17 @@ public abstract class ConsoleViewService {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+            if (!result.isEmpty()) {
+                Iterator<JSONObject> iterator = result.iterator();
+                while (iterator.hasNext()) {
+                    System.out.println(iterator.next());
+                }
+            }
+            else
+                System.err.println("there is no result for your request ");
         }
         else {
-            System.err.println(" File has not been existed ");
+            System.err.println(" File is empty");
         }
     }
 
