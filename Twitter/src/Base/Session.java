@@ -2,6 +2,7 @@ package Base;
 
 import Base.Account;
 import Base.Tweet;
+import org.json.simple.JSONObject;
 
 import java.io.*;
 import java.net.Socket;
@@ -27,11 +28,21 @@ public class Session implements Runnable{
     public void run()
     {
         try {
-            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-            while () {
-
+            FileOutputStream fileOutputStream = new FileOutputStream("Request.txt");
+            FileInputStream fileInputStream = new FileInputStream("Response.txt");
+            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+            int count;
+            byte[] bytes = new byte[4096];
+            while ((count = dataInputStream.read(bytes)) > 0) {
+                fileOutputStream.write(bytes, 0, count);
             }
+            while ((count = fileInputStream.read(bytes)) > 0) {
+                dataOutputStream.write(bytes, 0, count);
+            }
+            fileInputStream.close();
+            dataOutputStream.close();
+            dataInputStream.close();
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
