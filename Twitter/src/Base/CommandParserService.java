@@ -1,107 +1,188 @@
 package Base;
 
-import Base.Account;
-import Base.Retweet;
-import Base.Tweet;
-import javafx.util.Pair;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Scanner;
 
-import static Base.AuthenticationService.signup;
-import static Base.TimelineService.showMyTweets;
-import static Base.TweetingService.tweeting;
-
-public abstract class CommandParserService {
-    // for client's commands (beware all methods are for analyze client's command
-    public static Pair<String, JSONArray> commandParser (File file) {
-        JSONParser jsonParser = new JSONParser();
-        Pair pair = null;
+public class CommandParserService {
+    static Scanner scanner = new Scanner(System.in);
+    private static FileWriter file;
+    private String name;
+    private static int fileNumber = 0;
+    public String CommandParserService() {
+        JSONObject jsonObjectTemp = new JSONObject();
+        JSONObject objMethod = new JSONObject();
+        JSONArray value = new JSONArray();
+        System.out.println("Enter the method you want to run : \n " +
+                "1-sign up \n " +
+                "2-login \n " +
+                "3-add tweet \n " +
+                "4-show tweet of \n " +
+                "5-timeline \n " +
+                "6-delete tweet \n " +
+                "7-like \n " +
+                "8-reply \n" +
+                "9-follow \n" +
+                "10-unfollow \n");
+        String method = scanner.nextLine();
+        String username;
+        String password;
+        String text;
+        switch (method) {
+            case "1":
+                objMethod.put("method", "signup");
+                System.out.println("login :");
+                System.out.println("first name :");
+                String firstName = scanner.nextLine();
+                jsonObjectTemp.put("firstName", firstName);
+                System.out.println("last name :");
+                String lastName = scanner.nextLine();
+                jsonObjectTemp.put("lastName", lastName);
+                System.out.println("username :");
+                username = scanner.nextLine();
+                jsonObjectTemp.put("username", username);
+                System.out.println("password :");
+                password = scanner.nextLine();
+                jsonObjectTemp.put("password", password);
+                System.out.println("birth date :");
+                LocalDate birthDate = LocalDate.parse(scanner.nextLine());
+                jsonObjectTemp.put("birthDate", birthDate);
+                LocalDate registrationDate = LocalDate.now();
+                jsonObjectTemp.put("registrationDate", registrationDate);
+                value.add(jsonObjectTemp);
+                objMethod.put("parameterValue", value);
+                break;
+            case "2":
+                objMethod.put("method", "login");
+                System.out.println("login :");
+                System.out.println("username :");
+                username = scanner.nextLine();
+                jsonObjectTemp.put("username", username);
+                System.out.println("password :");
+                password = scanner.nextLine();
+                jsonObjectTemp.put("password", password);
+                value.add(jsonObjectTemp);
+                objMethod.put("parameterValue", value);
+                break;
+            case "3":
+                objMethod.put("method", "tweet");
+                System.out.println("tweet :");
+                System.out.println("username :");
+                username = scanner.nextLine();
+                jsonObjectTemp.put("username", username);
+                System.out.println("text of tweet :");
+                text = scanner.nextLine();
+                jsonObjectTemp.put("text", text);
+                value.add(jsonObjectTemp);
+                objMethod.put("parameterValue", value);
+                break;
+            case "4":
+                objMethod.put("method", "showTweetOf");
+                System.out.println("show tweet of :");
+                System.out.println("username :");
+                username = scanner.nextLine();
+                jsonObjectTemp.put("username", username);
+                value.add(jsonObjectTemp);
+                objMethod.put("parameterValue", value);
+                break;
+            case "5":
+                objMethod.put("method", "timeLine");
+                System.out.println("timeline :");
+                System.out.println("username :");
+                username = scanner.nextLine();
+                jsonObjectTemp.put("username", username);
+                value.add(jsonObjectTemp);
+                objMethod.put("parameterValue", value);
+                break;
+            case "6":
+                objMethod.put("method", "delete");
+                System.out.println("delete tweet :");
+                System.out.println("username :");
+                username = scanner.nextLine();
+                jsonObjectTemp.put("username", username);
+                System.out.println("text of tweet :");
+                text = scanner.nextLine();
+                jsonObjectTemp.put("text", text);
+                value.add(jsonObjectTemp);
+                objMethod.put("parameterValue", value);
+                break;
+            case "7":
+                objMethod.put("method", "like");
+                System.out.println("like tweet :");
+                System.out.println("username :");
+                username = scanner.nextLine();
+                jsonObjectTemp.put("username", username);
+                System.out.println("text of tweet :");
+                text = scanner.nextLine();
+                jsonObjectTemp.put("text", text);
+                value.add(jsonObjectTemp);
+                objMethod.put("parameterValue", value);
+                break;
+            case "8":
+                objMethod.put("method", "reply");
+                System.out.println("reply :");
+                System.out.println("username :");
+                username = scanner.nextLine();
+                jsonObjectTemp.put("username", username);
+                System.out.println("text of tweet :");
+                text = scanner.nextLine();
+                jsonObjectTemp.put("text", text);
+                System.out.println("text of reply :");
+                String reply = scanner.nextLine();
+                jsonObjectTemp.put("reply", reply);
+                value.add(jsonObjectTemp);
+                objMethod.put("parameterValue", value);
+                break;
+            case "9":
+                objMethod.put("method", "follow");
+                System.out.println("follow :");
+                System.out.println("username :");
+                username = scanner.nextLine();
+                jsonObjectTemp.put("username", username);
+                System.out.println("username that must be followed :");
+                String usernameFollowed = scanner.nextLine();
+                jsonObjectTemp.put("usernameFollowed", usernameFollowed);
+            case "10":
+                objMethod.put("method", "unfollow");
+                System.out.println("unfollow :");
+                System.out.println("username :");
+                username = scanner.nextLine();
+                jsonObjectTemp.put("username", username);
+                System.out.println("username that must be unfollowed :");
+                String usernameUnfollowed = scanner.nextLine();
+                jsonObjectTemp.put("usernameFollowed", usernameUnfollowed);
+            default:
+                throw new IllegalStateException("Unexpected value, try again ");
+        }
+        jsonObjectTemp = null;
         try {
-            Object object = jsonParser.parse(new FileReader(file));
-            JSONObject jsonObj = (JSONObject) object;
-            String method = (String) jsonObj.get("method");
-            JSONArray value = (JSONArray) jsonObj.get("value");
-            boolean flag = true;
-            while (flag) {
-                switch (method) {
-                    case "signup" :
-                        Iterator<JSONObject> iterator0 = value.iterator();
-                        while (iterator0.hasNext()) {
-                            JSONObject element = iterator0.next();
-                            String username = (String) element.get("username");
-                            String password = (String) element.get("password");
-                            String firstName = (String) element.get("firstName");
-                            String lastName = (String) element.get("lastName");
-                            char[] bio = (char[]) element.get("bio");
-                            LocalDate birthDate = (LocalDate) element.get("birthDate");
-                            LocalDate registrationDate = (LocalDate) element.get("registrationDate");
-                            Account account = new Account(firstName, lastName, bio, birthDate, registrationDate, username, password);
-                            // store in hard drive (&&&)
-                        }
-                    case "login" :
-                        Iterator<JSONObject> iterator1 = value.iterator();
-                        while (iterator1.hasNext()) {
-                            JSONObject element = iterator1.next();
-                            String username = (String) element.get("username");
-                            String password = (String) element.get("password");
-
-                        }
-                    case "sendTweet" :
-                        Iterator<JSONObject> iterator2 = value.iterator();
-                        while (iterator2.hasNext()) {
-                            JSONObject element = iterator2.next();
-                            String username = (String) element.get("username");
-                            String tweet = (String) element.get("tweet");
-                        }
-                    case "deleteTweet" :
-                        Iterator<JSONObject> iterator3 = value.iterator();
-                        while (iterator3.hasNext()) {
-                            JSONObject element = iterator3.next();
-                            String username = (String) element.get("username");
-                            String tweet = (String) element.get("tweet");
-                        }
-                    case "reply" :
-                        Iterator<JSONObject> iterator4 = value.iterator();
-                        while (iterator4.hasNext()) {
-                            JSONObject element = iterator4.next();
-                            String username = (String) element.get("username");
-                            String tweet = (String) element.get("tweet");
-                            String reply = (String) element.get("reply");
-                        }
-                    case "showTweetsOf" :
-                        Iterator<JSONObject> iterator5 = value.iterator();
-                        while (iterator5.hasNext()) {
-                            JSONObject element = iterator5.next();
-                            String username = (String) element.get("username");
-                        }
-                    case "timeline" :
-                        break;
-                    default:
-                        throw new IllegalStateException("Unexpected value: " + method);
-                }
-            }
-            //pair = new Pair(method, value);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            // constructs a FileWriter given a file name
+            name = objMethod.get("method").toString() + "-Request-" + fileNumber++ + ".json";
+            file = new FileWriter(name);
+            file.write(objMethod.toJSONString());
+            System.out.println("Successfully Copied JSON Object to File...");
+            System.out.println("\nJSON Object: " + objMethod);
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
+        } finally {
+            try {
+                file.flush();
+                file.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        if (!pair.equals(null))
-            return pair;
-        else
-            return new Pair<>("Error", null);
+        return name;
+    }
+    // unnecessary for now
+    public String getName() {
+        return name;
     }
 }

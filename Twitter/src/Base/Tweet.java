@@ -3,23 +3,27 @@ package Base;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 
 public class Tweet implements Serializable {
     private Account sender;
     private String text;
     private LocalDateTime date;
     private int likes;
+    private ArrayList<String> likeList;
     private int retweets;
     public static int countTweet = 0;
-    protected String idTweet;
+    private String idTweet;
 
     public Tweet(Account sender, String text, LocalDateTime date, int likes, int retweets) {
         this.sender = sender;
         this.text = text;
         this.date = date;
         this.likes = likes;
+        this.likeList = new ArrayList<>();
         this.retweets = retweets;
-        this.idTweet = countTweet++ + "";
+        this.idTweet = (countTweet++) + "";
     }
     public Tweet(Account sender, String text, LocalDateTime date) {
         this.sender = sender;
@@ -29,10 +33,20 @@ public class Tweet implements Serializable {
         this.retweets = 0;
         this.idTweet = countTweet++ + "";
     }
+    public Tweet(Account sender, String text) {
+        this.sender = sender;
+        this.text = text;
+        this.date = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);   // limit to minutes not further
+        this.likes = 0;
+        this.retweets = 0;
+        this.idTweet = countTweet++ + "";
+    }
+
 
     /**
      * getter methods of Tweet class for all methods
      */
+
     public Account getSender() {
         return sender;
     }
@@ -51,6 +65,9 @@ public class Tweet implements Serializable {
     public String getIdTweet() {
         return idTweet;
     }
+    public ArrayList<String> getLikeList() {
+        return likeList;
+    }
 
     /**
      * setter methods of Tweet class for text , likes and retweets number
@@ -66,6 +83,9 @@ public class Tweet implements Serializable {
     }
     public void setRetweets(int retweets) {
         this.retweets = retweets;
+    }
+    public void setLikeList(ArrayList<String> likeList) {
+        this.likeList = likeList;
     }
 
     public boolean checkText() {

@@ -18,7 +18,7 @@ public class Account implements Serializable {
      */
     private String firstName;
     private String lastName;
-    private char[] bio;
+    private String bio;
     private LocalDate birthDate;
     private LocalDate registrationDate;
     private String username;
@@ -29,8 +29,7 @@ public class Account implements Serializable {
      * constructor of Account class
      * instantiate an object of Account class
      * create a new Account
-     *
-     * @param firstName
+     *  @param firstName
      * @param lastName
      * @param bio
      * @param birthDate
@@ -38,7 +37,7 @@ public class Account implements Serializable {
      * @param username
      * @param password
      */
-    public Account(String firstName, String lastName, char[] bio, LocalDate birthDate, LocalDate registrationDate, String username, String password) {
+    public Account(String firstName, String lastName, String bio, LocalDate birthDate, LocalDate registrationDate, String username, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.bio = bio;
@@ -72,7 +71,7 @@ public class Account implements Serializable {
     public String getLastName() {
         return lastName;
     }
-    public char[] getBio() {
+    public String getBio() {
         return bio;
     }
     public LocalDate getBirthDate() {
@@ -100,7 +99,7 @@ public class Account implements Serializable {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-    public void setBio(char[] bio) {
+    public void setBio(String bio) {
         this.bio = bio;
     }
     public void setBirthDate(LocalDate birthDate) {
@@ -128,7 +127,7 @@ public class Account implements Serializable {
         return true;
     }
     public boolean checkBiography() {
-        if (bio.length > 256) {
+        if (bio.length() > 256) {
             return false;
         }
         return true;

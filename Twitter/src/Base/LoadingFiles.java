@@ -5,45 +5,26 @@ import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
-public abstract class LoadingFiles {
-    public static LinkedHashSet<String> usernameList = new LinkedHashSet<>();
-    public static LinkedHashSet<Account> accounts = new LinkedHashSet<>();
-    public static LinkedHashMap<String, ArrayList<Tweet>> individualTweets = new LinkedHashMap<>();
-    public static LinkedHashMap<String, ArrayList<String>> followingList = new LinkedHashMap<>();
+public class LoadingFiles {
+    static LinkedHashSet<String> usernameList = new LinkedHashSet<>();
+    static LinkedHashSet<Account> accounts = new LinkedHashSet<>();
+    static LinkedHashMap<String, ArrayList<Tweet>> individualTweets = new LinkedHashMap<>();
+    static LinkedHashMap<String, ArrayList<String>> followingList = new LinkedHashMap<>();
     public LoadingFiles() {
-
+        usernameList = new LinkedHashSet<>();
+        accounts = new LinkedHashSet<>();
+        individualTweets = new LinkedHashMap<>();
+        followingList = new LinkedHashMap<>();
     }
     /**
      * accounts information
      * load username and password of each account from hard drive and store it in an arraylist to use
      * by listFiles() method , we can get all files that stored in the specific directory
      */
-    /*public static void loadingAccounts() {
-        Path path = Paths.get("/database/information");
-        File dir = new File(String.valueOf(path));
-        File[] directoryListing = dir.listFiles();
-        if (directoryListing != null) {
-            for (File file : directoryListing) {
-                try (FileInputStream fileInputStream = new FileInputStream(file)) {
-                    ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-                    Account account = (Account) objectInputStream.readObject();
-                    accounts.add(account);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            System.err.println("Directory is not existed");
-        }
-    }*/ // first implementation
-    // second implementation :
     public static void loadingAccounts() {
         Path path = Paths.get("/database/accounts.txt");
         File file = new File(String.valueOf(path));
@@ -72,30 +53,6 @@ public abstract class LoadingFiles {
      * tip : in line 57 , we must allocate space for arraylist which holds the tweets of every username
      * tip : in line 56 , tweet.getSender() returns an object of Tweet type
      */
-    /*public static void loadingTweets() {
-        Path path = Paths.get("/database/tweets");
-        File dir = new File(String.valueOf(path));
-        File[] directoryListing = dir.listFiles();
-        if (directoryListing != null) {
-            for (File file : directoryListing) {
-                try (FileInputStream fileInputStream = new FileInputStream(file)) {
-                    ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-                    Tweet tweet = (Tweet) objectInputStream.readObject();
-                    individualTweets.put(tweet.getSender().getUsername(),new ArrayList<>());
-                    individualTweets.get(tweet.getSender().getUsername()).add(tweet);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            System.err.println("Directory is not existed");
-        }
-    }*/ // first implementation
-    // second implementation :
     public static void loadingTweets() {
         Path path = Paths.get("/database/tweets.txt");
         File file = new File(String.valueOf(path));
@@ -118,31 +75,6 @@ public abstract class LoadingFiles {
      * load following list of each account and put it into a hashmap that the keys are account owner and the values are
      * the accounts that owner is following them
      */
-    /*public static void loadingFollowingList() {
-        Path path = Paths.get("/database/lists");
-        File dir = new File(String.valueOf(path));
-        File[] directoryListing = dir.listFiles();
-        if (directoryListing != null) {
-            for (File file : directoryListing) {
-                try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
-                    String line;
-                    // put name of file in key because name of file is the account that followingList is belong to it ( doer account )
-                    followingList.put(file.getName(), new ArrayList<>());
-                    while ((line = bufferedReader.readLine()) != null) {
-                        //adding username strings , these strings are username that the account ( who its name is on file ) is following
-                        followingList.get(file.getName()).add(line);
-                    }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            System.err.println("Directory is not existed");
-        }
-    }*/ // first implementation
-    // second implementation :
     public static void loadingFollowingList() {
         Path path = Paths.get("/database/followingList.txt");
         File file = new File(String.valueOf(path));
@@ -205,5 +137,29 @@ public abstract class LoadingFiles {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+
+    public static Account findAccount(String username) {
+        Iterator<Account> iterator = accounts.iterator();
+        Account account = null;
+        while (iterator.hasNext()) {
+            account = iterator.next();
+            if (account.getUsername().equals(username)) {
+                break;
+            }
+        }
+        return account;
+    }
+    public static Tweet findTweet(String username, String text) {
+        Tweet tweet = null;
+        Iterator<Tweet> iterator = individualTweets.get(username).iterator();
+        while (iterator.hasNext()) {
+            tweet = iterator.next();
+            if (tweet.getText().equals(text)) {
+                break;
+            }
+        }
+        return tweet;
     }
 }

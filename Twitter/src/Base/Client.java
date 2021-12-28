@@ -10,7 +10,7 @@ public class Client {
     private static Path path;
     public Client() {
         System.out.println("welcome to twitter, you are able to give a file as a request or create a file for request");
-        System.out.println("1-request file name \n 2-create request file \n exit");
+        System.out.println("1-requestFile location \n 2-create requestFile \n exit");
         String userInput = scanner.nextLine();
         boolean flag = true;
         while (flag) {
@@ -19,8 +19,8 @@ public class Client {
                     String location = scanner.nextLine().trim();
                     path = Paths.get(location).toAbsolutePath();
                 case "2":
-                    JSONWriter jsonWriter = new JSONWriter();
-                    path = Paths.get(jsonWriter.getName().trim()).toAbsolutePath();
+                    CommandParserService commandParserService = new CommandParserService();
+                    path = Paths.get(commandParserService.getName().trim()).toAbsolutePath();
                 case "3":
                     flag = false;
                     break;

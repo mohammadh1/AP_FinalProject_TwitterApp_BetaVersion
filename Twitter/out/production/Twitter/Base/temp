@@ -1,0 +1,11 @@
+String username = (String) element.get("username");
+                JSONObject element1 = iterator2.next();
+                textOfTweet = (String) element.get("text");
+                account = findAccount(username);
+                System.out.println(username);
+                System.out.println(textOfTweet);
+
+
+
+
+

@@ -1,11 +1,6 @@
 package Base;
 
-import Base.Account;
-import Base.Tweet;
-
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 
 import static Base.LoadingFiles.followingList;
@@ -32,14 +27,7 @@ public class TimelineService {
      * @return an array list of tweets that all followed user tweeted
      */
     public static ArrayList<Tweet> showAllTweets(Account account) {    // for another account
-        ArrayList<Tweet> tweets = new ArrayList<>();
-        for (String username : followingList.get(account.getUsername())) {
-            for (Tweet tweet : individualTweets.get(username)) {
-                tweets.add(tweet);
-            }
-        }
-        tweets.sort(Comparator.comparing(Tweet::getDate));
-        return tweets;
+        return getTweets(account);
     }
 
     public static ArrayList<Tweet> showMyTweets(Account account) {    // for my account
@@ -49,6 +37,21 @@ public class TimelineService {
         }
         myTweets.sort(Comparator.comparing(Tweet::getDate));
         return myTweets;
+    }
+
+    private static ArrayList<Tweet> getTweets(Account account) {
+        ArrayList<Tweet> timeLine = new ArrayList<>();
+        for (String followingUser : followingList.get(account.getUsername())) {
+            for (Tweet tweet : individualTweets.get(followingUser)) {
+                timeLine.add(tweet);
+            }
+        }
+        timeLine.sort(Comparator.comparing(Tweet::getDate));
+        return timeLine;
+    }
+
+    public static ArrayList<Tweet> showMyTimeLine(Account account) {
+        return getTweets(account);
     }
 
     public static int showLikes(Tweet tweet) {
