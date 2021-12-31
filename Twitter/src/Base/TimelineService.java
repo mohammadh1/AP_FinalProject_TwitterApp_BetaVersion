@@ -6,11 +6,19 @@ import java.util.Comparator;
 import static Base.LoadingFiles.followingList;
 import static Base.LoadingFiles.individualTweets;
 
+/**
+ * timeline class
+ * showing last tweets.txt of people whom are followed by you
+ *
+ * @author Mohammad Hoseinkhani
+ * @version 0.0
+ *
+ */
 public class TimelineService {
     /**
-     * showing tweets of a specific account
-     * @param account user A that we want to see all tweets which he tweeted
-     * @return an array list of tweets that user A tweeted
+     * showing tweets.txt of a specific account
+     * @param account user A that we want to see all tweets.txt which he tweeted
+     * @return an array list of tweets.txt that user A tweeted
      */
     public static ArrayList<Tweet> showTweetsOf(Account account) {
         if (individualTweets.get(account).isEmpty()) {
@@ -22,9 +30,9 @@ public class TimelineService {
     }
 
     /**
-     * showing tweets of all accounts that followed by user
-     * @param account requester account that wants to see all tweets of accounts that he followed
-     * @return an array list of tweets that all followed user tweeted
+     * showing tweets.txt of all accounts that followed by user
+     * @param account requester account that wants to see all tweets.txt of accounts that he followed
+     * @return an array list of tweets.txt that all followed user tweeted
      */
     public static ArrayList<Tweet> showAllTweets(Account account) {    // for another account
         return getTweets(account);

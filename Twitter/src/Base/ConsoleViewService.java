@@ -11,6 +11,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 
+/**
+ * show the response of server in terminal
+ * just print everything that is in json file
+ *
+ * @author Mohammad Hoseinkhani
+ * @version 0.0
+ *
+ */
 public abstract class ConsoleViewService {
     public static void terminalStart(File file) {
         JSONParser jsonParser = new JSONParser();

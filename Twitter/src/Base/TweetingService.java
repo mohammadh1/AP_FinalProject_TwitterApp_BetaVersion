@@ -1,5 +1,7 @@
 package Base;
 
+import com.company.Reply;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,6 +12,18 @@ import java.util.Iterator;
 
 import static Base.LoadingFiles.individualTweets;
 
+/**
+ * tweeting class
+ * send tweets.txt
+ * delete tweets.txt
+ * retweet tweets.txt
+ * like tweets.txt
+ * reply tweets.txt (not completed yet)
+ *
+ * @author Mohammad Hoseinkhani
+ * @version 0.0
+ *
+ */
 public class TweetingService {
 
     public static void tweeting(Tweet tweet) {
@@ -44,15 +58,16 @@ public class TweetingService {
                 0,
                 0);
         retweetedTweet.setRetweets(retweetedTweet.getRetweets()+1);
-        retweet.getRetweeters().add(usernameOfRetweeter);
-        retweet.setRetweeters(retweet.getRetweeters());
+        retweetedTweet.getRetweeters().add(usernameOfRetweeter);
+        retweetedTweet.setRetweeters(retweetedTweet.getRetweeters());
         tweeting(retweetedTweet);
     }
 
     // add up like number for the tweet
     public static void liking(Tweet likedTweet, String usernameOfLiker) {
         likedTweet.setLikes(likedTweet.getLikes()+1);
-        likedTweet.getLikeList().add(usernameOfLiker);
-        likedTweet.setLikeList(likedTweet.getLikeList());
+        likedTweet.getLikers().add(usernameOfLiker);
+        likedTweet.setLikeList(likedTweet.getLikers());
     }
+    public static void replying(Tweet tweet, Reply reply) {}
 }

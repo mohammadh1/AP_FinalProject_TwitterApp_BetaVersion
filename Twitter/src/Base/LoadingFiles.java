@@ -9,6 +9,13 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
+/**
+ * load from files and fill catch of program
+ *
+ * @author Mohammad Hoseinkhani
+ * @version 0.0
+ *
+ */
 public class LoadingFiles {
     static LinkedHashSet<String> usernameList = new LinkedHashSet<>();
     static LinkedHashSet<Account> accounts = new LinkedHashSet<>();
@@ -23,52 +30,52 @@ public class LoadingFiles {
     /**
      * accounts information
      * load username and password of each account from hard drive and store it in an arraylist to use
-     * by listFiles() method , we can get all files that stored in the specific directory
      */
     public static void loadingAccounts() {
-        Path path = Paths.get("/database/accounts.txt");
-        File file = new File(String.valueOf(path));
-        if (file.exists()) {
-            try (FileInputStream fileInputStream = new FileInputStream(file)) {
-                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-                accounts = (LinkedHashSet<Account>) objectInputStream.readObject();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+        if (new File("accounts.txt").length() != 0) {
+            Path path = Paths.get("accounts.txt");
+            File file = new File(String.valueOf(path));
+            if (file.exists()) {
+                try (FileInputStream fileInputStream = new FileInputStream(file)) {
+                    ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+                    accounts = (LinkedHashSet<Account>) objectInputStream.readObject();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                System.err.println("File is not existed");
             }
-        } else {
-            System.err.println("File is not existed");
-        }
-        for (Account account : accounts) {
-            usernameList.add(account.getUsername());
+            for (Account account : accounts) {
+                usernameList.add(account.getUsername());
+            }
         }
     }
     /**
-     *
-     * loading tweets from hard drive and store them in a linkedHashmap that the keys are usernames and the values
-     * are tweets that every individual texted on platform
-     * tip : in line 57 , we must allocate space for arraylist which holds the tweets of every username
-     * tip : in line 56 , tweet.getSender() returns an object of Tweet type
+     * loading tweets.txt from hard drive and store them in a linkedHashmap that the keys are usernames and the values
+     * are tweets.txt that every individual texted on platform
      */
     public static void loadingTweets() {
-        Path path = Paths.get("/database/tweets.txt");
-        File file = new File(String.valueOf(path));
-        if (file.exists()) {
-            try (FileInputStream fileInputStream = new FileInputStream(file)) {
-                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-                individualTweets = (LinkedHashMap<String, ArrayList<Tweet>>) objectInputStream.readObject();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+        if (new File("tweets.txt").length() != 0) {
+            Path path = Paths.get("tweets.txt");
+            File file = new File(String.valueOf(path));
+            if (file.exists()) {
+                try (FileInputStream fileInputStream = new FileInputStream(file)) {
+                    ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+                    individualTweets = (LinkedHashMap<String, ArrayList<Tweet>>) objectInputStream.readObject();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                System.err.println("File is not existed");
             }
-        } else {
-            System.err.println("File is not existed");
         }
     }
     /**
@@ -76,21 +83,23 @@ public class LoadingFiles {
      * the accounts that owner is following them
      */
     public static void loadingFollowingList() {
-        Path path = Paths.get("/database/followingList.txt");
-        File file = new File(String.valueOf(path));
-        if (file.exists()) {
-            try (FileInputStream fileInputStream = new FileInputStream(file)) {
-                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-                followingList = (LinkedHashMap<String, ArrayList<String>>) objectInputStream.readObject();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+        if (new File("followingList.txt").length() != 0) {
+            Path path = Paths.get("followingList.txt");
+            File file = new File(String.valueOf(path));
+            if (file.exists()) {
+                try (FileInputStream fileInputStream = new FileInputStream(file)) {
+                    ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+                    followingList = (LinkedHashMap<String, ArrayList<String>>) objectInputStream.readObject();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                System.err.println("File is not existed");
             }
-        } else {
-            System.err.println("File is not existed");
         }
     }
 
@@ -106,10 +115,12 @@ public class LoadingFiles {
     }*/ // this method is not necessary yet (to update all lists of following of every account)
 
 
-
-    // write on files from here :
+    /**
+     * storingFollowingList : storing followingList.txt on file
+     */
     public static void storingFollowingList() {
-        try (FileOutputStream fileOutputStream = new FileOutputStream("/database/followingList.txt")) {
+
+        try (FileOutputStream fileOutputStream = new FileOutputStream("followingList.txt")) {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(followingList);
         } catch (FileNotFoundException e) {
@@ -118,8 +129,12 @@ public class LoadingFiles {
             e.printStackTrace();
         }
     }
+
+    /**
+     * storingTweets : storing individualTweets on file
+     */
     public static void storingTweets() {
-        try (FileOutputStream fileOutputStream = new FileOutputStream("/database/tweets.txt")) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream("tweets.txt.txt")) {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(individualTweets);
         } catch (FileNotFoundException e) {
@@ -128,8 +143,12 @@ public class LoadingFiles {
             e.printStackTrace();
         }
     }
+
+    /**
+     * storingAccounts : storing Accounts on file
+     */
     public static void storingAccounts() {
-        try (FileOutputStream fileOutputStream = new FileOutputStream("/database/accounts.txt")) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream("accounts.txt")) {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(accounts);
         } catch (FileNotFoundException e) {
@@ -140,6 +159,12 @@ public class LoadingFiles {
     }
 
 
+    /**
+     * find account using username
+     *
+     * @param username username of account
+     * @return found account
+     */
     public static Account findAccount(String username) {
         Iterator<Account> iterator = accounts.iterator();
         Account account = null;
@@ -151,8 +176,17 @@ public class LoadingFiles {
         }
         return account;
     }
+
+    /**
+     * find tweet using username and text
+     *
+     * @param username username of Account
+     * @param text text of Tweet
+     * @return found Tweet
+     */
     public static Tweet findTweet(String username, String text) {
         Tweet tweet = null;
+        text = text.trim();
         Iterator<Tweet> iterator = individualTweets.get(username).iterator();
         while (iterator.hasNext()) {
             tweet = iterator.next();

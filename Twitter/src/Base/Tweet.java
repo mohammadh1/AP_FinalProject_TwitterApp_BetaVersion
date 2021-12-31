@@ -6,13 +6,22 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
+/**
+ * timeline class
+ * showing last tweets.txt of people whom are followed by you
+ *
+ * @author Mohammad Hoseinkhani
+ * @version 0.0
+ *
+ */
 public class Tweet implements Serializable {
     private Account sender;
     private String text;
     private LocalDateTime date;
     private int likes;
-    private ArrayList<String> likeList;
+    private ArrayList<String> likers;
     private int retweets;
+    private ArrayList<String> retweeters;
     public static int countTweet = 0;
     private String idTweet;
 
@@ -21,8 +30,9 @@ public class Tweet implements Serializable {
         this.text = text;
         this.date = date;
         this.likes = likes;
-        this.likeList = new ArrayList<>();
+        this.likers = new ArrayList<>();
         this.retweets = retweets;
+        this.retweeters = new ArrayList<>();
         this.idTweet = (countTweet++) + "";
     }
     public Tweet(Account sender, String text, LocalDateTime date) {
@@ -30,7 +40,9 @@ public class Tweet implements Serializable {
         this.text = text;
         this.date = date;
         this.likes = 0;
+        this.likers = new ArrayList<>();
         this.retweets = 0;
+        this.retweeters = new ArrayList<>();
         this.idTweet = countTweet++ + "";
     }
     public Tweet(Account sender, String text) {
@@ -38,7 +50,9 @@ public class Tweet implements Serializable {
         this.text = text;
         this.date = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);   // limit to minutes not further
         this.likes = 0;
+        this.likers = new ArrayList<>();
         this.retweets = 0;
+        this.retweeters = new ArrayList<>();
         this.idTweet = countTweet++ + "";
     }
 
@@ -46,7 +60,6 @@ public class Tweet implements Serializable {
     /**
      * getter methods of Tweet class for all methods
      */
-
     public Account getSender() {
         return sender;
     }
@@ -65,9 +78,13 @@ public class Tweet implements Serializable {
     public String getIdTweet() {
         return idTweet;
     }
-    public ArrayList<String> getLikeList() {
-        return likeList;
+    public ArrayList<String> getLikers() {
+        return likers;
     }
+    public ArrayList<String> getRetweeters() {
+        return retweeters;
+    }
+
 
     /**
      * setter methods of Tweet class for text , likes and retweets number
@@ -85,8 +102,12 @@ public class Tweet implements Serializable {
         this.retweets = retweets;
     }
     public void setLikeList(ArrayList<String> likeList) {
-        this.likeList = likeList;
+        this.likers = likeList;
     }
+    public void setRetweeters(ArrayList<String> retweeter) {
+        this.retweeters = retweeter;
+    }
+
 
     public boolean checkText() {
         if (this.text.length() > 256) {

@@ -9,7 +9,10 @@ import static Base.EncryptAlgorithm.getSHA;
 import static Base.EncryptAlgorithm.toHexString;
 
 /**
+ * Account class defines every account that going to be created in app
  *
+ * @author Mohammad Hoseinkhani
+ * @version 0.0
  */
 public class Account implements Serializable {
 
@@ -29,13 +32,13 @@ public class Account implements Serializable {
      * constructor of Account class
      * instantiate an object of Account class
      * create a new Account
-     *  @param firstName
-     * @param lastName
-     * @param bio
-     * @param birthDate
-     * @param registrationDate
-     * @param username
-     * @param password
+     *  @param firstName firstname of user
+     * @param lastName lastname of user
+     * @param bio bio of user
+     * @param birthDate birthdate of user
+     * @param registrationDate registration date of user
+     * @param username username of user
+     * @param password password of user
      */
     public Account(String firstName, String lastName, String bio, LocalDate birthDate, LocalDate registrationDate, String username, String password) {
         this.firstName = firstName;
@@ -114,6 +117,12 @@ public class Account implements Serializable {
 
     //check methods start from here : ->
 
+    /**
+     * check username that new client want to submit for availability
+     *
+     * @param username username of new client
+     * @return a boolean to tell us username is available or not
+     */
     public boolean checkUsername(String username) {
         for (String strUser : usernameList) {
             try {
@@ -126,12 +135,23 @@ public class Account implements Serializable {
         }
         return true;
     }
+
+    /**
+     * check bio that new client want to submit for being less that 256
+     *
+     * @return a boolean to tell us bio's length is acceptable or not
+     */
     public boolean checkBiography() {
         if (bio.length() > 256) {
             return false;
         }
         return true;
     }
+
+    /**
+     * encrypting password to hash so if password files would be stolen no one can figure out correct password
+     *
+     */
     public void encryptingPassword() {
         try
         {

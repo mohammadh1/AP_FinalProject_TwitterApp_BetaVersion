@@ -6,39 +6,50 @@ import org.json.simple.JSONObject;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * commandParser class is responsible to create a json file as a request
+ *
+ * @author Mohammad Hoseinkhani
+ * @version 0.0
+ */
 public class CommandParserService {
     static Scanner scanner = new Scanner(System.in);
     private static FileWriter file;
-    private String name;
-    private static int fileNumber = 0;
-    public String CommandParserService() {
+    private String name;   // name of file
+    private static int fileNumber = 0;   // the number of files ( we can create more than one request file)
+
+    /**
+     * commandParserService method will start a long switch case operation to get information from user
+     *
+     * @return the name of json file as a request
+     */
+    public String commandParser() {
         JSONObject jsonObjectTemp = new JSONObject();
         JSONObject objMethod = new JSONObject();
         JSONArray value = new JSONArray();
-        System.out.println("Enter the method you want to run : \n " +
-                "1-sign up \n " +
-                "2-login \n " +
-                "3-add tweet \n " +
-                "4-show tweet of \n " +
-                "5-timeline \n " +
-                "6-delete tweet \n " +
-                "7-like \n " +
-                "8-reply \n" +
-                "9-follow \n" +
-                "10-unfollow \n");
+        System.out.println("""
+                Enter the method you want to run :\s
+                 1-sign up\s
+                 2-login\s
+                 3-add tweet\s
+                 4-show tweet of\s
+                 5-timeline\s
+                 6-delete tweet\s
+                 7-like\s
+                 8-reply\s
+                9-follow\s
+                10-unfollow\s
+                """);
         String method = scanner.nextLine();
         String username;
         String password;
         String text;
         switch (method) {
-            case "1":
+            case "1":   // signup
                 objMethod.put("method", "signup");
-                System.out.println("login :");
+                System.out.println("signup :");
                 System.out.println("first name :");
                 String firstName = scanner.nextLine();
                 jsonObjectTemp.put("firstName", firstName);
@@ -51,6 +62,9 @@ public class CommandParserService {
                 System.out.println("password :");
                 password = scanner.nextLine();
                 jsonObjectTemp.put("password", password);
+                System.out.println("bio :");
+                String bio = scanner.nextLine();
+                jsonObjectTemp.put("bio", bio);
                 System.out.println("birth date :");
                 LocalDate birthDate = LocalDate.parse(scanner.nextLine());
                 jsonObjectTemp.put("birthDate", birthDate);
@@ -59,7 +73,7 @@ public class CommandParserService {
                 value.add(jsonObjectTemp);
                 objMethod.put("parameterValue", value);
                 break;
-            case "2":
+            case "2":   // login
                 objMethod.put("method", "login");
                 System.out.println("login :");
                 System.out.println("username :");
@@ -71,7 +85,7 @@ public class CommandParserService {
                 value.add(jsonObjectTemp);
                 objMethod.put("parameterValue", value);
                 break;
-            case "3":
+            case "3": // send a tweet
                 objMethod.put("method", "tweet");
                 System.out.println("tweet :");
                 System.out.println("username :");
@@ -83,7 +97,7 @@ public class CommandParserService {
                 value.add(jsonObjectTemp);
                 objMethod.put("parameterValue", value);
                 break;
-            case "4":
+            case "4":  // show tweets.txt of a user
                 objMethod.put("method", "showTweetOf");
                 System.out.println("show tweet of :");
                 System.out.println("username :");
@@ -92,7 +106,7 @@ public class CommandParserService {
                 value.add(jsonObjectTemp);
                 objMethod.put("parameterValue", value);
                 break;
-            case "5":
+            case "5":   // show timeline of the user
                 objMethod.put("method", "timeLine");
                 System.out.println("timeline :");
                 System.out.println("username :");
@@ -101,7 +115,7 @@ public class CommandParserService {
                 value.add(jsonObjectTemp);
                 objMethod.put("parameterValue", value);
                 break;
-            case "6":
+            case "6":  // delete a tweet
                 objMethod.put("method", "delete");
                 System.out.println("delete tweet :");
                 System.out.println("username :");
@@ -113,7 +127,7 @@ public class CommandParserService {
                 value.add(jsonObjectTemp);
                 objMethod.put("parameterValue", value);
                 break;
-            case "7":
+            case "7":  // like a tweet
                 objMethod.put("method", "like");
                 System.out.println("like tweet :");
                 System.out.println("username :");
@@ -125,7 +139,7 @@ public class CommandParserService {
                 value.add(jsonObjectTemp);
                 objMethod.put("parameterValue", value);
                 break;
-            case "8":
+            case "8":  // reply
                 objMethod.put("method", "reply");
                 System.out.println("reply :");
                 System.out.println("username :");
@@ -140,7 +154,7 @@ public class CommandParserService {
                 value.add(jsonObjectTemp);
                 objMethod.put("parameterValue", value);
                 break;
-            case "9":
+            case "9":  // follow
                 objMethod.put("method", "follow");
                 System.out.println("follow :");
                 System.out.println("username :");
@@ -149,7 +163,7 @@ public class CommandParserService {
                 System.out.println("username that must be followed :");
                 String usernameFollowed = scanner.nextLine();
                 jsonObjectTemp.put("usernameFollowed", usernameFollowed);
-            case "10":
+            case "10":  // unfollow
                 objMethod.put("method", "unfollow");
                 System.out.println("unfollow :");
                 System.out.println("username :");
@@ -161,10 +175,11 @@ public class CommandParserService {
             default:
                 throw new IllegalStateException("Unexpected value, try again ");
         }
-        jsonObjectTemp = null;
+        // store taken inputs to a json file :
         try {
             // constructs a FileWriter given a file name
-            name = objMethod.get("method").toString() + "-Request-" + fileNumber++ + ".json";
+            //name = objMethod.get("method").toString() + "-Request-" + fileNumber++ + ".json";
+            name = "Request.json";
             file = new FileWriter(name);
             file.write(objMethod.toJSONString());
             System.out.println("Successfully Copied JSON Object to File...");
@@ -179,10 +194,6 @@ public class CommandParserService {
                 e.printStackTrace();
             }
         }
-        return name;
-    }
-    // unnecessary for now
-    public String getName() {
         return name;
     }
 }
