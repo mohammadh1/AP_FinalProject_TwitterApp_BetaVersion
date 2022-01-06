@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2022-01-05T23:42:11.322607300Z</date>
+  <millis>1641426131322</millis>
+  <nanos>607300</nanos>
+  <sequence>1</sequence>
+  <logger>log</logger>
+  <level>INFO</level>
+  <class>com.twitter.Main</class>
+  <method>main</method>
+  <thread>1</thread>
+  <message>Information message</message>
+</record>
+</log>
