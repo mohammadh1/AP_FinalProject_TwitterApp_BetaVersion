@@ -1,9 +1,10 @@
 package Base;
 
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Tweet {
+public class Tweet implements Serializable {
     private Account sender;
     private String text;
     private LocalDateTime date;
@@ -18,6 +19,14 @@ public class Tweet {
         this.date = date;
         this.likes = likes;
         this.retweets = retweets;
+        this.idTweet = countTweet++ + "";
+    }
+    public Tweet(Account sender, String text, LocalDateTime date) {
+        this.sender = sender;
+        this.text = text;
+        this.date = date;
+        this.likes = 0;
+        this.retweets = 0;
         this.idTweet = countTweet++ + "";
     }
 
@@ -64,5 +73,15 @@ public class Tweet {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Tweet : " +
+                "text='" + text + '\'' +
+                ", date=" + date +
+                ", likes=" + likes +
+                ", retweets=" + retweets +
+                '}';
     }
 }

@@ -1,8 +1,9 @@
 package Base;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Retweet extends Tweet {
+public class Retweet extends Tweet implements Serializable {
     private String header;
     private Account retweeter;
     public Retweet(String header, Account sender, String text, LocalDateTime date, int likes, int retweets) {
