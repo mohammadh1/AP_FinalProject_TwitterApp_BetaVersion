@@ -9,6 +9,7 @@ import com.twitter.server.Tweet;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import static com.twitter.server.LoadingFiles.findTweet;
 import static com.twitter.server.LoadingFiles.individualTweets;
 
 /**
@@ -64,9 +65,12 @@ public class TweetingServiceImpl implements TweetingService {
 
     // add up like number for the tweet
     public void liking(Tweet likedTweet, String usernameOfLiker) {
-        likedTweet.setLikes(likedTweet.getLikes()+1);
-        likedTweet.getLikers().add(usernameOfLiker);
-        likedTweet.setLikeList(likedTweet.getLikers());
+        for (Tweet tweet : individualTweets.get(likedTweet.getSender().getUsername())) {
+            int i = individualTweets.get(likedTweet.getSender().getUsername()).indexOf(tweet);
+            int like = individualTweets.get(likedTweet.getSender().getUsername()).get(i).getLikes();
+            individualTweets.get(likedTweet.getSender().getUsername()).get(i).setLikes(++like);
+            individualTweets.get(likedTweet.getSender().getUsername()).get(i).getLikers().add(usernameOfLiker);
+        }
     }
     public void replying(Tweet tweet, Reply reply) {}
 }

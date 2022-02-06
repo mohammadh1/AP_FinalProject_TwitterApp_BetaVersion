@@ -1,15 +1,14 @@
 package com.implementation;
 
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.interfaces.RequestParserService;
-import com.interfaces.TimelineService;
-import com.interfaces.TweetingService;
+import com.tools.LocalDateDeserializer;
+import com.tools.LocalDateSerializer;
+import com.tools.LocalDateTimeDeserializer;
+import com.tools.LocalDateTimeSerializer;
 import com.twitter.server.Account;
 import com.twitter.server.LoadingFiles;
 import com.twitter.server.Reply;
@@ -23,7 +22,9 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+
 import static com.twitter.server.LoadingFiles.*;
+import static com.twitter.server.Server.loginState;
 
 /**
  * mystery method to parse request json in server and do some process on client request
@@ -35,9 +36,9 @@ import static com.twitter.server.LoadingFiles.*;
 public class RequestParserServiceImpl implements RequestParserService{
     private Boolean hasError;
     private int errorCode;
-    private static Account currentAccount;
+    private Account currentAccount;
     private static int fileNumber = 0;
-    private static String log;
+    private static String log = "./files/log/log.txt";
     private static Logger logger = Logger.getLogger("log");
 
     /**
@@ -76,7 +77,12 @@ public class RequestParserServiceImpl implements RequestParserService{
         loadingTweets();
         loadingFollowingList();
         // start to analyze request :
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateDeserializer())
+                .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
+                .registerTypeAdapter(LocalDateTime.class,new LocalDateTimeSerializer())
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer())
+                .create();
         // response file that server will send to client :
         File response = null;
         // boolean variable to see whether method will be executed successfully or not :
@@ -105,14 +111,14 @@ public class RequestParserServiceImpl implements RequestParserService{
             // an arrayList that saves subObjects that supposed to write in result JsonArray
             ArrayList<JsonObject> listOfResponses = new ArrayList<>();
             ///while (flag) {
-            try (FileWriter logWriter = new FileWriter(log)) {
+            try (FileWriter logWriter = new FileWriter(log,true)) {
                 switch (method) {
                     // sign up method
                     case "signup":  // error code = 1
                         username = jsonElement.getAsJsonObject().get("username").getAsString();
                         /////////////////////////////////////////////////
                         logger.info("attempt signup");
-                        logWriter.write("[op]" + username + "attempt signup");
+                        logWriter.write("[op]" + username + "-attempt signup" + "\n");
                         ////////////////////////////////////////////////
                         password = jsonElement.getAsJsonObject().get("password").getAsString();
                         String firstName = jsonElement.getAsJsonObject().get("firstName").getAsString();
@@ -125,14 +131,15 @@ public class RequestParserServiceImpl implements RequestParserService{
                         // sees operation is successful or not
                         System.out.println(operationOfMethods);
                         if (operationOfMethods) {
-                            currentAccount = findAccount(username);
+                            //currentAccount = findAccount(username);
                             hasError = false;
+                            errorCode = 0;
                             logger.info("signup successful");
-                            logWriter.write("[done]" + username + "signup successful");
+                            logWriter.write("[done]" + username + "-signup successful" + "\n");
                         } else {
                             System.err.println("signup failed, if you already have signed up please login");
                             logger.info("signup failed, if you already have signed up please login");
-                            logWriter.write("[error]" + username + "wrong inputs");
+                            logWriter.write("[error]" + username + "-wrong inputs" + "\n");
                             hasError = true;
                             errorCode = 1;
                         }
@@ -147,22 +154,25 @@ public class RequestParserServiceImpl implements RequestParserService{
                         username = jsonElement.getAsJsonObject().get("username").getAsString();
                         /////////////////////////////////////////////////
                         logger.info("attempt login");
-                        logWriter.write("[op]" + username + "attempt login");
+                        logWriter.write("[op]" + username + "-attempt login" + "\n");
                         ////////////////////////////////////////////////
                         password = jsonElement.getAsJsonObject().get("password").getAsString();
                         operationOfMethods = authenticationService.login(username, password);
                         // sees operation is successful or not
                         if (operationOfMethods) {
-                            currentAccount = findAccount(username);
+                            //currentAccount = findAccount(username);
+                            loginState.put(username, true);
                             hasError = false;
+                            errorCode = 0;
                             logger.info("login successful");
-                            logWriter.write("[done]" + username + "login successful");
+                            System.out.println("Account : " + username);
+                            logWriter.write("[done]" + username + "-login successful" + "\n");
                         } else {
                             System.err.println("login failed");
                             hasError = true;
                             errorCode = 2;
                             logger.info("login failed");
-                            logWriter.write("[error]" + username + "wrong inputs");
+                            logWriter.write("[error]" + username + "-wrong inputs" + "\n");
                         }
                         // creates json object and json file :
                         JsonObject stateOfLogin = new JsonObject();   // state of whether login is executed or not
@@ -175,26 +185,29 @@ public class RequestParserServiceImpl implements RequestParserService{
                         username = jsonElement.getAsJsonObject().get("username").getAsString();
                         /////////////////////////////////////////////////
                         logger.info("attempt sendTweet");
-                        logWriter.write("[op]" + username + "attempt sendTweet");
+                        logWriter.write("[op]" + username + "-attempt sendTweet" + "\n");
                         ////////////////////////////////////////////////
                         text = jsonElement.getAsJsonObject().get("text").getAsString();
                         account = findAccount(username);
                         // sees if tweet is for current username
-                        if (!account.equals(null) && currentAccount.equals(account)) {
+                        if (!account.equals(null) && loginState.get(username).equals(true)) {
                             tweetingService.tweeting(new Tweet(account, text));
                             hasError = false;
-                        } else if (!currentAccount.equals(account)) {
-                            System.err.println("you can not tweet for others");
+                            errorCode = 0;
+                            logger.info("sendTweet successful");
+                            logWriter.write("[done]" + username + "-sendTweet successful" + "\n");
+                        } else if (!loginState.get(username).equals(true)) {
+                            System.err.println("you can not tweet for others(the username has not logged in");
                             hasError = true;
                             errorCode = 3;
-                            logger.info("sendTweet successful");
-                            logWriter.write("[done]" + username + "sendTweet successful");
+                            logger.info("sendTweet unsuccessful");
+                            logWriter.write("[error]" + username + "-sendTweet unsuccessful" + "\n");
                         } else {
                             System.err.println("no account found for this information");
                             hasError = true;
                             errorCode = 4;
-                            logger.info("login failed");
-                            logWriter.write("[error]" + username + "wrong inputs");
+                            logger.info("sendTweet unsuccessful");
+                            logWriter.write("[error]" + username + "-wrong inputs" + "\n");
                         }
                         // creates json object and json file :
                         JsonObject stateOfTweeting = new JsonObject();   // state of whether send operation is executed or not
@@ -208,28 +221,29 @@ public class RequestParserServiceImpl implements RequestParserService{
                         username = jsonElement.getAsJsonObject().get("username").getAsString();
                         /////////////////////////////////////////////////
                         logger.info("attempt deleteTweet");
-                        logWriter.write("[op]" + username + "attempt deleteTweet");
+                        logWriter.write("[op]" + username + "-attempt deleteTweet" + "\n");
                         ////////////////////////////////////////////////
                         text = jsonElement.getAsJsonObject().get("text").getAsString();
                         tweet = findTweet(username, text);
                         account = findAccount(username);
-                        if (!tweet.equals(null) && currentAccount.equals(account)) {
+                        if (!tweet.equals(null) && loginState.get(username).equals(true)) {
                             tweetingService.deleting(new Tweet(account, text));
                             hasError = false;
+                            errorCode = 0;
                             logger.info("deleteTweet successful");
-                            logWriter.write("[done]" + username + "deleteTweet successful");
-                        } else if (!currentAccount.equals(account)) {
-                            System.err.println("you can not delete tweets for others");
+                            logWriter.write("[done]" + username + "-deleteTweet successful" + "\n");
+                        } else if (!loginState.get(username).equals(true)) {
+                            System.err.println("you can not delete tweets for others(the username has not logged in)");
                             hasError = true;
                             errorCode = 3;
                             logger.info("deleteTweet failed");
-                            logWriter.write("[error]" + username + "wrong inputs");
+                            logWriter.write("[error]" + username + "-wrong inputs" + "\n");
                         } else {
                             System.err.println("the tweet is not found");
                             hasError = true;
                             errorCode = 4;
                             logger.info("deleteTweet failed");
-                            logWriter.write("[error]" + username + "wrong inputs");
+                            logWriter.write("[error]" + username + "-wrong inputs" + "\n");
                         }
                         // creates json object and json file :
                         JsonObject stateOfDeleting = new JsonObject();   // state of whether delete operation is executed or not
@@ -243,29 +257,30 @@ public class RequestParserServiceImpl implements RequestParserService{
                         username = jsonElement.getAsJsonObject().get("username").getAsString();
                         /////////////////////////////////////////////////
                         logger.info("attempt reply");
-                        logWriter.write("[op]" + username + "attempt reply");
+                        logWriter.write("[op]" + username + "-attempt reply" + "\n");
                         ////////////////////////////////////////////////
                         text = jsonElement.getAsJsonObject().get("text").getAsString();
                         String reply = jsonElement.getAsJsonObject().get("reply").getAsString();
                         tweet = findTweet(username, text);
                         account = findAccount(username);
-                        if (!tweet.equals(null) && currentAccount.equals(account)) {
+                        if (!tweet.equals(null) && loginState.get(username).equals(true)) {
                             tweetingService.replying(new Tweet(account, text), new Reply(findAccount(username), reply, LocalDateTime.now(), 0, 0));
                             hasError = false;
+                            errorCode = 0;
                             logger.info("reply successful");
-                            logWriter.write("[done]" + username + "reply successful");
-                        } else if (!currentAccount.equals(account)) {
-                            System.err.println("you can not reply in role of others");
+                            logWriter.write("[done]" + username + "-reply successful" + "\n" );
+                        } else if (!loginState.get(username).equals(true)) {
+                            System.err.println("you can not reply in role of others(the username has not logged in");
                             hasError = true;
                             errorCode = 3;
                             logger.info("reply failed");
-                            logWriter.write("[error]" + username + "wrong inputs");
+                            logWriter.write("[error]" + username + "-wrong inputs" + "\n");
                         } else {
                             System.err.println("the tweet is not found");
                             hasError = true;
                             errorCode = 4;
                             logger.info("reply failed");
-                            logWriter.write("[error]" + username + "wrong inputs");
+                            logWriter.write("[error]" + username + "-wrong inputs" + "\n");
                         }
                         // creates json object and json file :
                         JsonObject stateOfReplying = new JsonObject();   // state of whether reply operation is executed or not
@@ -280,34 +295,36 @@ public class RequestParserServiceImpl implements RequestParserService{
                         username = jsonElement.getAsJsonObject().get("username").getAsString();
                         /////////////////////////////////////////////////
                         logger.info("attempt showTweetsOf");
-                        logWriter.write("[op]" + username + "attempt showTweetsOf");
+                        logWriter.write("[op]" + username + "-attempt showTweetsOf" + "\n");
                         ////////////////////////////////////////////////
                         account = findAccount(username);
-                        if (currentAccount.equals(account)) {
+                        if (loginState.get(username).equals(true)) {
                             try {
                                 showedTweets = timelineService.showMyTweets(account);
                                 hasError = false;
+                                errorCode = 0;
                                 logger.info("showTweetsOf successful");
-                                logWriter.write("[done]" + username + "showTweetsOf successful");
+                                logWriter.write("[done]" + username + "-showTweetsOf successful" + "\n");
                             } catch (Exception e) {
                                 errorCode = 7;
                                 hasError = true;
                                 e.printStackTrace();
                                 logger.info("showTweetsOf failed");
-                                logWriter.write("[error]" + username + "wrong inputs");
+                                logWriter.write("[error]" + username + "-wrong inputs" + "\n");
                             }
                         } else {
                             try {
                                 showedTweets = timelineService.showTweetsOf(account);
                                 hasError = false;
+                                errorCode = 0;
                                 logger.info("showTweetsOf successful");
-                                logWriter.write("[done]" + username + "showTweetsOf successful");
+                                logWriter.write("[done]" + username + "-showTweetsOf successful" + "\n");
                             } catch (Exception e) {
                                 errorCode = 8;
                                 hasError = true;
                                 e.printStackTrace();
                                 logger.info("showTweetsOf failed");
-                                logWriter.write("[error]" + username + "wrong inputs");
+                                logWriter.write("[error]" + username + "-wrong inputs" + "\n");
                             }
                         }
                         // creates json object and json file :
@@ -321,28 +338,29 @@ public class RequestParserServiceImpl implements RequestParserService{
                         username = jsonElement.getAsJsonObject().get("username").getAsString();
                         /////////////////////////////////////////////////
                         logger.info("attempt timeline");
-                        logWriter.write("[op]" + username + "attempt timeline");
+                        logWriter.write("[op]" + username + "-attempt timeline" + "\n");
                         ////////////////////////////////////////////////
                         account = findAccount(username);
-                        if (currentAccount.equals(account)) {
+                        if (loginState.get(username).equals(true)) {
                             try {
                                 timeLine = timelineService.showMyTimeLine(account);
                                 hasError = false;
+                                errorCode = 0;
                                 logger.info("timeline successful");
-                                logWriter.write("[done]" + username + "timeline successful");
+                                logWriter.write("[done]" + username + "-timeline successful" + "\n");
                             } catch (Exception e) {
                                 errorCode = 7;
                                 hasError = true;
                                 e.printStackTrace();
                                 logger.info("timeline failed");
-                                logWriter.write("[error]" + username + "wrong inputs");
+                                logWriter.write("[error]" + username + "-wrong inputs" + "\n");
                             }
                         } else {
-                            System.err.println("username is not the that username that logged in");
+                            System.err.println("username has not logged in");
                             errorCode = 8;
                             hasError = true;
-                            logger.info("showTweetsOf failed");
-                            logWriter.write("[error]" + username + "wrong inputs");
+                            logger.info("timeline failed");
+                            logWriter.write("[error]" + username + "-wrong inputs" + "\n");
                         }
                         // creates json object and json file :
                         for (Tweet twt : timeLine) {
@@ -351,43 +369,43 @@ public class RequestParserServiceImpl implements RequestParserService{
                         errorAndResultSetter(hasError, errorCode, responseJsonObject, listOfResponses);
                         break;
                     // follow method
-                    case "follow": // error code = 5 followed successful | error code = 6 followed unsuccessful
+                    case "follow": // error code = 5 followed unsuccessful | error code = 6 unfollowed unsuccessful
                         username = jsonElement.getAsJsonObject().get("username").getAsString();
                         /////////////////////////////////////////////////
                         logger.info("attempt follow");
-                        logWriter.write("[op]" + username + "attempt follow");
+                        logWriter.write("[op]" + username + "-attempt follow" + "\n");
                         ////////////////////////////////////////////////
                         String usernameFollowed = jsonElement.getAsJsonObject().get("usernameFollowed").getAsString();
                         account = findAccount(username);                            // doer account
                         Account followTarget = findAccount(usernameFollowed);      // target account
-                        if (currentAccount.equals(account) && followTarget != null) {
+                        if (loginState.get(username).equals(true) && followTarget != null) {
                             // followTarget != null : check if target account existed
                             operationOfMethods = observerService.follow(account, followTarget);
                             if (operationOfMethods) {
                                 System.out.println("followed successfully");
                                 hasError = false;
-                                errorCode = 5;
+                                errorCode = 0;
                                 logger.info("follow successful");
-                                logWriter.write("[done]" + username + "follow successful");
+                                logWriter.write("[done]" + username + "-follow successful" + "\n");
                             } else {
                                 System.out.println("followed unsuccessfully");
                                 hasError = true;
                                 errorCode = 6;
                                 logger.info("follow failed");
-                                logWriter.write("[error]" + username + "wrong inputs");
+                                logWriter.write("[error]" + username + "-wrong inputs" + "\n");
                             }
                         } else if (followTarget == null) {
                             System.err.println("we couldn't find any account for this username, no account is followed");
                             hasError = true;
                             errorCode = 4;
                             logger.info("follow failed");
-                            logWriter.write("[error]" + username + "wrong inputs");
-                        } else {
-                            System.err.println("you can not access to other's account");
+                            logWriter.write("[error]" + username + "-wrong inputs" + "\n");
+                        } else if (!loginState.get(username).equals(true)) {
+                            System.err.println("you can not access to other's account(the username has not logged in)");
                             hasError = true;
                             errorCode = 3;
                             logger.info("follow failed");
-                            logWriter.write("[error]" + username + "wrong inputs");
+                            logWriter.write("[error]" + username + "-wrong inputs" + "\n");
                         }
                         // creates json object and json file :
                         JsonObject stateOfFollowing = new JsonObject();   // state of whether follow operation is executed or not
@@ -396,48 +414,84 @@ public class RequestParserServiceImpl implements RequestParserService{
                         errorAndResultSetter(hasError, errorCode, responseJsonObject, listOfResponses);
                         break;
                     // unfollow method
-                    case "unfollow": // error code = 5 unfollowed successful | error code = 6 unfollowed unsuccessful
+                    case "unfollow": // error code = 5 followed unsuccessful | error code = 6 unfollowed unsuccessful
                         username = jsonElement.getAsJsonObject().get("username").getAsString();
                         /////////////////////////////////////////////////
                         logger.info("attempt unfollow");
-                        logWriter.write("[op]" + username + "attempt unfollow");
+                        logWriter.write("[op]" + username + "-attempt unfollow" + "\n");
                         ////////////////////////////////////////////////
                         String usernameUnfollowed = jsonElement.getAsJsonObject().get("usernameUnfollowed").getAsString();
                         account = findAccount(username);          // doer account
                         Account unfollowTarget = findAccount(usernameUnfollowed);      // target account
-                        if (currentAccount.equals(account) && unfollowTarget != null) {
+                        if (loginState.get(username).equals(true) && unfollowTarget != null) {
                             // target != null : check if target account existed
                             operationOfMethods = observerService.unfollow(account, unfollowTarget);
                             if (operationOfMethods) {
                                 System.out.println("unfollowed successfully");
                                 hasError = false;
-                                errorCode = 5;
+                                errorCode = 0;
                                 logger.info("unfollow successful");
-                                logWriter.write("[done]" + username + "unfollow successful");
+                                logWriter.write("[done]" + username + "-unfollow successful" + "\n");
                             } else {
                                 System.out.println("unfollowed unsuccessfully");
                                 hasError = true;
                                 errorCode = 6;
                                 logger.info("unfollow failed");
-                                logWriter.write("[error]" + username + "wrong inputs");
+                                logWriter.write("[error]" + username + "-wrong inputs" + "\n");
                             }
                         } else if (unfollowTarget == null) {
                             System.err.println("we couldn't find any account for this username, no account is followed");
                             hasError = true;
                             errorCode = 4;
                             logger.info("follow failed");
-                            logWriter.write("[error]" + username + "wrong inputs");
-                        } else {
-                            System.err.println("you can not access to other's account");
+                            logWriter.write("[error]" + username + "-wrong inputs" + "\n");
+                        } else if (!loginState.get(username).equals(true)) {
+                            System.err.println("you can not access to other's account(the username has not logged in)");
                             hasError = true;
                             errorCode = 3;
                             logger.info("follow failed");
-                            logWriter.write("[error]" + username + "wrong inputs");
+                            logWriter.write("[error]" + username + "-wrong inputs" + "\n");
                         }
                         // creates json object and json file :
                         JsonObject stateOfUnfollowing = new JsonObject();   // state of whether unfollow operation is executed or not
                         stateOfUnfollowing.addProperty("state", "done");
                         listOfResponses.add(stateOfUnfollowing);
+                        errorAndResultSetter(hasError, errorCode, responseJsonObject, listOfResponses);
+                        break;
+                    case "like":
+                        username = jsonElement.getAsJsonObject().get("username").getAsString();
+                        /////////////////////////////////////////////////
+                        logger.info("attempt like");
+                        logWriter.write("[op]" + username + "-attempt like" + "\n");
+                        ////////////////////////////////////////////////
+                        String sender = jsonElement.getAsJsonObject().get("sender").getAsString();
+                        text = jsonElement.getAsJsonObject().get("text").getAsString();
+                        tweet = findTweet(sender, text);
+                        account = findAccount(username);
+                        if (!tweet.equals(null) && loginState.get(username).equals(true)) {
+                            tweetingService.liking(tweet,username);
+                            hasError = false;
+                            errorCode = 0;
+                            logger.info("like successful");
+                            logWriter.write("[done]" + username + "-like successful" + "\n");
+                        } else if (!loginState.get(username).equals(true)) {
+                            System.err.println("you can not delete tweets for others(the username has not logged in");
+                            hasError = true;
+                            errorCode = 3;
+                            logger.info("like failed");
+                            logWriter.write("[error]" + username + "-wrong inputs" + "\n");
+                        } else {
+                            System.err.println("the tweet is not found");
+                            hasError = true;
+                            errorCode = 4;
+                            logger.info("like failed");
+                            logWriter.write("[error]" + username + "-wrong inputs" + "\n");
+                        }
+                        // creates json object and json file :
+                        JsonObject stateOfLiking = new JsonObject();   // state of whether delete operation is executed or not
+                        stateOfLiking.addProperty("state", "done");
+                        stateOfLiking.addProperty("Tweet", text);
+                        listOfResponses.add(stateOfLiking);
                         errorAndResultSetter(hasError, errorCode, responseJsonObject, listOfResponses);
                         break;
                     default:
@@ -451,7 +505,7 @@ public class RequestParserServiceImpl implements RequestParserService{
             ///}
             // writes on json file
             //String name = method + "-Response" + fileNumber++ + ".json";
-            String name = "Response.json";
+            String name = "./files/Response/Response.json";
             try (JsonWriter writer = new JsonWriter(new FileWriter(name))){
                 gson.toJson(responseJsonObject,writer);
             }
@@ -460,7 +514,7 @@ public class RequestParserServiceImpl implements RequestParserService{
         } catch (IOException e) {
             e.printStackTrace();
         }
-        response = new File("Response.json");
+        response = new File("./files/Response/Response.json");
         if (response.length() != 0)
             return response;
         else {

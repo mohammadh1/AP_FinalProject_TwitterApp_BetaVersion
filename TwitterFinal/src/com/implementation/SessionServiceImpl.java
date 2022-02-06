@@ -1,7 +1,11 @@
 package com.implementation;
 
+import com.twitter.server.Account;
+
 import java.io.*;
 import java.net.Socket;
+
+import static com.twitter.server.LoadingFiles.currentAccount;
 
 /**
  * session is communicating with server and server is handling multithreading
@@ -10,7 +14,10 @@ import java.net.Socket;
  * @version 0.0
  */
 public class SessionServiceImpl implements Runnable{
-    private Socket socket;
+    private final Socket socket;
+    private Account currentAcc;
+    private DataOutputStream dataOutputStream;
+    private DataInputStream dataInputStream;
 
     /**
      * constructor of Session class
@@ -19,6 +26,7 @@ public class SessionServiceImpl implements Runnable{
     public SessionServiceImpl(Socket socket)
     {
         this.socket = socket;
+        currentAcc = currentAccount;
     }
 
     /**
@@ -37,28 +45,28 @@ public class SessionServiceImpl implements Runnable{
         BufferedWriter bufferedWriter;
         BufferedReader bufferedReader;
         try {
-            bufferedWriter = new BufferedWriter(new FileWriter("RequestClient.json"));
-            bufferedReader = new BufferedReader(new FileReader("Response.json"));
-            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-            //---------------------------------
-            //first operation
-            String str = dataInputStream.readUTF();
-            bufferedWriter.write(str);
-            System.out.println(str);
-            bufferedWriter.close();
-            //---------------------------------
-            RequestParserServiceImpl requestParserService = new RequestParserServiceImpl();
-            File Response = requestParserService.requestParse(new File("RequestClient.json"));
-            //---------------------------------
-            //second operation
-            String str1 = bufferedReader.readLine();
-            dataOutputStream.writeUTF(str1);
-            //---------------------------------
-            dataOutputStream.flush();
-            System.out.println("done");
+                bufferedWriter = new BufferedWriter(new FileWriter("./files/Request/RequestClientCopy.json"));
+                dataOutputStream = new DataOutputStream(socket.getOutputStream());
+                dataInputStream = new DataInputStream(socket.getInputStream());
+                //---------------------------------
+                //first operation
+                String str = dataInputStream.readUTF();
+                bufferedWriter.write(str);
+                System.out.println(str);
+                bufferedWriter.close();
+                //---------------------------------
+                RequestParserServiceImpl requestParserService = new RequestParserServiceImpl();
+                File fileResponse = requestParserService.requestParse(new File("./files/Request/RequestClientCopy.json"));
+                bufferedReader = new BufferedReader(new FileReader(fileResponse));
+                //---------------------------------
+                //second operation
+                String str1 = bufferedReader.readLine();
+                dataOutputStream.writeUTF(str1);
+                //---------------------------------
+                dataOutputStream.flush();
+                System.out.println("session process is done");
 
-            bufferedReader.close();
+                bufferedReader.close();
             dataOutputStream.close();
             dataInputStream.close();
         } catch (IOException e) {

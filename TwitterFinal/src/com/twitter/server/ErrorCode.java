@@ -3,10 +3,10 @@ package com.twitter.server;
 /**
  * Error codes define here as an enum
  *
- * Error code 1
- * Error code 2
- * Error code 3
- * Error code 4
+ * Error code 1 : signup error
+ * Error code 2 : login error
+ * Error code 3 : wrong username
+ * Error code 4 : information not found
  * Error code 5
  * Error code 6
  * Error code 7

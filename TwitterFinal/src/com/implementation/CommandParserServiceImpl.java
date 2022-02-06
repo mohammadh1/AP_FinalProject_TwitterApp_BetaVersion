@@ -87,7 +87,7 @@ public class CommandParserServiceImpl implements CommandParserService {
                 objMethod.put("parameterValue", value);
                 break;
             case "3": // send a tweet
-                objMethod.put("method", "tweet");
+                objMethod.put("method", "sendTweet");
                 System.out.println("tweet :");
                 System.out.println("username :");
                 username = scanner.nextLine();
@@ -99,7 +99,7 @@ public class CommandParserServiceImpl implements CommandParserService {
                 objMethod.put("parameterValue", value);
                 break;
             case "4":  // show tweets.ap of a user
-                objMethod.put("method", "showTweetOf");
+                objMethod.put("method", "showTweetsOf");
                 System.out.println("show tweet of :");
                 System.out.println("username :");
                 username = scanner.nextLine();
@@ -108,7 +108,7 @@ public class CommandParserServiceImpl implements CommandParserService {
                 objMethod.put("parameterValue", value);
                 break;
             case "5":   // show timeline of the user
-                objMethod.put("method", "timeLine");
+                objMethod.put("method", "timeline");
                 System.out.println("timeline :");
                 System.out.println("username :");
                 username = scanner.nextLine();
@@ -117,7 +117,7 @@ public class CommandParserServiceImpl implements CommandParserService {
                 objMethod.put("parameterValue", value);
                 break;
             case "6":  // delete a tweet
-                objMethod.put("method", "delete");
+                objMethod.put("method", "deleteTweet");
                 System.out.println("delete tweet :");
                 System.out.println("username :");
                 username = scanner.nextLine();
@@ -134,6 +134,9 @@ public class CommandParserServiceImpl implements CommandParserService {
                 System.out.println("username :");
                 username = scanner.nextLine();
                 jsonObjectTemp.put("username", username);
+                System.out.println("who send the tweet ?");
+                String tweetSender = scanner.nextLine();
+                jsonObjectTemp.put("sender", tweetSender);
                 System.out.println("text of tweet :");
                 text = scanner.nextLine();
                 jsonObjectTemp.put("text", text);
@@ -164,6 +167,9 @@ public class CommandParserServiceImpl implements CommandParserService {
                 System.out.println("username that must be followed :");
                 String usernameFollowed = scanner.nextLine();
                 jsonObjectTemp.put("usernameFollowed", usernameFollowed);
+                value.add(jsonObjectTemp);
+                objMethod.put("parameterValue", value);
+                break;
             case "10":  // unfollow
                 objMethod.put("method", "unfollow");
                 System.out.println("unfollow :");
@@ -173,6 +179,9 @@ public class CommandParserServiceImpl implements CommandParserService {
                 System.out.println("username that must be unfollowed :");
                 String usernameUnfollowed = scanner.nextLine();
                 jsonObjectTemp.put("usernameFollowed", usernameUnfollowed);
+                value.add(jsonObjectTemp);
+                objMethod.put("parameterValue", value);
+                break;
             default:
                 throw new IllegalStateException("Unexpected value, try again ");
         }
@@ -180,7 +189,7 @@ public class CommandParserServiceImpl implements CommandParserService {
         try {
             // constructs a FileWriter given a file name
             //name = objMethod.get("method").toString() + "-Request-" + fileNumber++ + ".json";
-            name = "Request.json";
+            name = "./files/Request/Request.json";
             file = new FileWriter(name);
             file.write(objMethod.toJSONString());
             System.out.println("Successfully Copied JSON Object to File...");

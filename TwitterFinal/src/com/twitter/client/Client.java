@@ -30,11 +30,11 @@ public class Client {
      * user can decide to write a json on their own or give a location of json file
      */
     public Client() {
-        System.out.println("welcome to twitter, you are able to give a file as a request or create a file for request");
-        System.out.println("1-requestFile location \n2-create requestFile \nexit");
-        String userInput = scanner.nextLine();
         boolean flag = true;
         while (flag) {
+            System.out.println("welcome to twitter, you are able to give a file as a request or create a file for request");
+            System.out.println("1-requestFile location \n2-create requestFile \nexit");
+            String userInput = scanner.nextLine();
             // a switch case to print the first lines of program
             switch (userInput) {
                 case "1":
@@ -65,10 +65,9 @@ public class Client {
     }
     public static void main(String args[])
     {
-        new Client();
         int port = 0;
         String ip = "";
-        try (FileReader fileReader = new FileReader("../src/com/resources/client-application.properties")) {
+        try (FileReader fileReader = new FileReader("./src/com/resources/client-application.properties")) {
             Properties properties = new Properties();
             properties.load(fileReader);
             port = Integer.parseInt(properties.getProperty("server.port"));

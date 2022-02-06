@@ -1,7 +1,5 @@
 package com.twitter.server;
 
-import com.twitter.server.Account;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;

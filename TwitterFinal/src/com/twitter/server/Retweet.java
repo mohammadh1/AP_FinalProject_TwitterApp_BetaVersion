@@ -1,8 +1,5 @@
 package com.twitter.server;
 
-import com.twitter.server.Account;
-import com.twitter.server.Tweet;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 

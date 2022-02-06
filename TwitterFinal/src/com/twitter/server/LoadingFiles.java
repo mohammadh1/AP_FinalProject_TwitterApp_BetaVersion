@@ -1,8 +1,6 @@
 package com.twitter.server;
 
 import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -13,6 +11,8 @@ import java.util.*;
  *
  */
 public class LoadingFiles {
+    // current account that logged in
+    public static Account currentAccount;
     // all usernames store here
     public static LinkedHashSet<String> usernameList = new LinkedHashSet<>();
     // all accounts store here
@@ -41,6 +41,15 @@ public class LoadingFiles {
             e.printStackTrace();
         }
     }
+
+    /**
+     * getter of current account
+     * @return current account
+     */
+    public static Account getCurrentAccount() {
+        return currentAccount;
+    }
+
     /**
      * accounts information
      * load username and password of each account from hard drive and store it in an arraylist to use
@@ -134,7 +143,7 @@ public class LoadingFiles {
      */
     public static void storingFollowingList() {
 
-        try (FileOutputStream fileOutputStream = new FileOutputStream("followingList.ap")) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(followingFilePath)) {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(followingList);
         } catch (FileNotFoundException e) {
@@ -148,7 +157,7 @@ public class LoadingFiles {
      * storingTweets : storing individualTweets on file
      */
     public static void storingTweets() {
-        try (FileOutputStream fileOutputStream = new FileOutputStream("tweets.ap")) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(tweetsFilePath)) {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(individualTweets);
         } catch (FileNotFoundException e) {
@@ -162,7 +171,7 @@ public class LoadingFiles {
      * storingAccounts : storing Accounts on file
      */
     public static void storingAccounts() {
-        try (FileOutputStream fileOutputStream = new FileOutputStream("accounts.ap")) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(accountsFilePath)) {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(accounts);
         } catch (FileNotFoundException e) {

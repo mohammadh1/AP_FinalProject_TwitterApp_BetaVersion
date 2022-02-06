@@ -1,10 +1,7 @@
 package com.implementation;
 
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import com.interfaces.ConsoleViewService;
 
@@ -25,6 +22,7 @@ import java.util.Iterator;
 public class ConsoleViewServiceImpl implements ConsoleViewService {
     public void terminalStart(File file) {
         Gson gson = new Gson();
+        Gson gson1 = new GsonBuilder().setPrettyPrinting().create();
         if (file.length() != 0) {
             JsonArray result = null;
             try (JsonReader jsonReader = gson.newJsonReader(new FileReader(file))) {
@@ -34,14 +32,15 @@ public class ConsoleViewServiceImpl implements ConsoleViewService {
                     result = jsonObj.get("result").getAsJsonArray();
                     Iterator<JsonElement> iterator = result.iterator();
                     int countInternal = result.size();
-                    System.out.println(countInternal);
+                    System.out.println("size of Json array : " + countInternal);
+                    System.out.println("JSON OBJECT : ");
                     for (int i = 0; i < countInternal; i++) {
                         JsonElement element = iterator.next();
-                        System.out.println(element.getAsJsonObject());
+                        System.out.println(gson1.toJson(element));
                     }
                 } else {
                     int errorCode = jsonObj.get("errorCode").getAsInt();
-                    System.err.println("program execution faced an error ( ERROR CODE : " + errorCode);
+                    System.err.println("program execution faced an error ( ERROR CODE : " + errorCode + " )");
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
