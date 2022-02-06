@@ -4,9 +4,15 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+/**
+ *
+ *
+ * @author Mohammad Hoseinkhani
+ * @version 0.0
+ *
+ */
 public class Retweet extends Tweet implements Serializable {
     private String header;
-    private ArrayList<String> retweeters;
     private String idRetweet;
     public Retweet(String header, Account sender, String text, LocalDateTime date, int likes, int retweets) {
         super(sender, text, date, likes, retweets);
@@ -14,18 +20,13 @@ public class Retweet extends Tweet implements Serializable {
         idRetweet = (countTweet++) + "";
     }
 
-    public ArrayList<String> getRetweeters() {
-        return retweeters;
-    }
-
-    public void setRetweeters(ArrayList<String> retweeter) {
-        this.retweeters = retweeter;
-    }
-
+    /**
+     * getter and setter for retweeters and header
+     * header example : "Jack retweeted"
+     */
     public String getHeader() {
         return header;
     }
-
     public void setHeader(String header) {
         this.header = header;
     }

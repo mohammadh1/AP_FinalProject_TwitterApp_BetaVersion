@@ -5,6 +5,15 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * encrypting process is doing here
+ * first : call (getSHA)
+ * second : call toHexString
+ *
+ * @author Mohammad Hoseinkhani
+ * @version 0.0
+ *
+ */
 public class EncryptAlgorithm {
     public static byte[] getSHA(String input) throws NoSuchAlgorithmException
     {
